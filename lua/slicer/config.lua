@@ -1,7 +1,7 @@
 local M = {}
 
 --@class SlicerConfig
-M.default {
+M.defaults {
 	work_duration = 25 * 60,
 	break_duration = 5 * 60,
 	extend_amout = 10 * 60,
