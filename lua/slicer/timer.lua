@@ -16,8 +16,9 @@ M.total_duration = 0
 local uv_timer = nil
 
 local function notify(msg, level)
-	if config.options.notifications.enabled then
-		vim.notify(msg, level or vim.log.levels.INFO, { title = config.options.notifications.title })
+	level = level or vim.log.levels.INFO
+	if config.options.notifications and config.options.notifications.enabled then
+		vim.notify(msg, level, { title = config.options.notifications.title or "Slicer" })
 	end
 end
 
@@ -29,13 +30,14 @@ local function tick()
 	if M.time_remaining > 0 then
 		M.time_remaining = M.time_remaining - 1
 	else
+		local previous_state = M.current_state
 		M.stop_timer()
-		if M.current_state == M.STATE.WORKING then
-			notify("Slice ended ! Take a time to relax 🍵", vim.log.levels.WARN)
+
+		if previous_state == M.STATE.WORKING then
+			notify("Slice ended ! Take time to relax 🍵", vim.log.levels.WARN)
 		else
-			notify("Break is finished ! Ready to work ?")
+			notify("Break finished ! Ready to work ?", vim.log.levels.INFO)
 		end
-		M.current_state = M.STATE.STOPPED
 	end
 
 	vim.schedule(function()
@@ -49,11 +51,11 @@ function M.start_work(custom_duration)
 	M.time_remaining = M.total_duration
 	M.current_state = M.STATE.WORKING
 
-	local uv = vim.uv
+	local uv = vim.uv or vim.loop
 	uv_timer = uv.new_timer()
 	uv_timer:start(1000, 1000, vim.schedule_wrap(tick))
 
-	notify("Slice started for " .. math.floor(M.total_duration / 60) .. " min. Nice sessions !	")
+	notify("Slice started for " .. math.floor(M.total_duration / 60) .. " min. Nice session!")
 end
 
 function M.extend(seconds)
@@ -64,7 +66,7 @@ function M.extend(seconds)
 	local add_time = seconds or config.options.extend_amount
 	M.time_remaining = M.time_remaining + add_time
 	M.total_duration = M.total_duration + add_time
-	notify("Slice extended by " .. math.floor(M.total_duration / 60) .. "min")
+	notify("Slice extended by " .. math.floor(add_time / 60) .. " min")
 end
 
 function M.toggle_pause()
@@ -73,7 +75,7 @@ function M.toggle_pause()
 		notify("Slice in break mode")
 	elseif M.current_state == M.STATE.PAUSED then
 		M.current_state = M.STATE.WORKING
-		notify("Slice return to work mode")
+		notify("Slice returned to work mode")
 	end
 	vim.cmd("redrawstatus")
 end
