@@ -11,7 +11,7 @@ local function inject_into_lualine()
 
 	local slicer_component = {
 		function() return timer.get_status() end,
-		color = { fg = "#FFB86C", gui = "bold" },
+		color = { fg = config.bar_color },
 	}
 
 	table.insert(lualine_cfg.sections.lualine_x, 1, slicer_component)
