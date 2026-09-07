@@ -3,7 +3,7 @@ local ui = require("slicer.ui.progress")
 
 local M = {}
 
-M.STATE {
+M.STATE = {
 	STOPPED = "STOPPED",
 	WORKING = "WORKING",
 	PAUSED = "PAUSED",
@@ -16,7 +16,7 @@ M.total_duration = 0
 local uv_timer = nil
 
 local function notify(msg, level)
-	if config.options.notifications.enables then
+	if config.options.notifications.enabled then
 		vim.notify(msg, level or vim.log.levels.INFO, { title = config.options.notifications.title })
 	end
 end
