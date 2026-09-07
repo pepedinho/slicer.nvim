@@ -11,7 +11,7 @@ local function inject_into_lualine()
 
 	local slicer_component = {
 		function() return timer.get_status() end,
-		color = { fg = config.bar_color },
+		color = { fg = config.options.bar_color, gui = config.options.bar_bold and "bold" or nil },
 	}
 
 	table.insert(lualine_cfg.sections.lualine_x, 1, slicer_component)
@@ -20,10 +20,13 @@ end
 
 function M.setup(opts)
 	config.setup(opts)
-	vim.api.nvim_create_autocmd("User", {
-		pattern = "VeryLazy",
-		callback = inject_into_lualine,
-	})
+	if package.loaded["lualine"] then
+		inject_into_lualine()
+	else
+		vim.api.nvim_create_autocmd("VimEnter", {
+			callback = inject_into_lualine,
+		})
+	end
 end
 
 M.start = timer.start_work

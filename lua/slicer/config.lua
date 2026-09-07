@@ -17,7 +17,8 @@ M.defaults = {
 		enable = true,
 		title = "Slicer",
 	},
-	bar_color = "#FFB86C"
+	bar_color = "#FFB86C",
+	bar_bold = false,
 }
 
 M.options = {}
